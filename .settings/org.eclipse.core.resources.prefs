@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+encoding//src/main/java/xyz/onerous/modularnetwork/ModularNetwork.java=UTF-8
+encoding//src/main/java/xyz/onerous/modularnetwork/learner/multithread/MTBatchTrainer.java=UTF-8
+encoding//src/main/java/xyz/onerous/modularnetwork/learner/multithread/MTTrainThread.java=UTF-8
+encoding//src/main/java/xyz/onerous/modularnetwork/learner/singlethread/STBatchTrainer.java=UTF-8
