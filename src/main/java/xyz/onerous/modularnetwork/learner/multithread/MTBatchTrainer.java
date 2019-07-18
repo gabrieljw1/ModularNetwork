@@ -27,7 +27,11 @@ public class MTBatchTrainer extends Thread implements BatchTrainer {
 		
 		for (int i = 0; i < trainThreads.length; i++) {
 			while (trainThreads[i].deltaPackage == null) { 
-				Thread.yield();
+				try {
+					trainThreads[i].join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			deltaPackages[i] = trainThreads[i].deltaPackage;
 		}
@@ -57,8 +61,14 @@ public class MTBatchTrainer extends Thread implements BatchTrainer {
 		
 		start();
 		
-		while (!finished) {
-			Thread.yield();
+		while (totalDeltaPackage == null) { 
+			for (int i = 0; i < trainThreads.length; i++) {
+				try {
+					trainThreads[i].join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		return totalDeltaPackage;

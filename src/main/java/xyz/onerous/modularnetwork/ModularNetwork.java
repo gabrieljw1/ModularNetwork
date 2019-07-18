@@ -49,6 +49,10 @@ public class ModularNetwork implements Cloneable {
 		layers.add(ActivationLayer.generateActivationLayer(activationType, neurons, pNeurons));
 	}
 	
+	public void addLayer(Layer layer) {
+		layers.add(layer);
+	}
+	
 	public double[] activateNetwork(double[] input) throws InvalidInputLengthException {
 		if (input.length != layers.get(0).neurons()) { throw new InvalidInputLengthException(); }
 		
@@ -486,15 +490,21 @@ public class ModularNetwork implements Cloneable {
 	}
 	
 	@Override public ModularNetwork clone() {
-		ModularNetwork modularNetwork = null;
+		ModularNetwork cloneModularNetwork = null;
 		
 		try {
-			modularNetwork = (ModularNetwork) super.clone();
+			cloneModularNetwork = (ModularNetwork) super.clone();
+			
+			cloneModularNetwork.layers = new ArrayList<Layer>();
+			
+			for (Layer layer : this.layers) {
+				cloneModularNetwork.layers.add(layer.clone());
+			}
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
-			modularNetwork = new ModularNetwork(this.layers);
+			cloneModularNetwork = new ModularNetwork(this.layers);
 		}
 		
-		return modularNetwork;
+		return cloneModularNetwork;
 	}
 }

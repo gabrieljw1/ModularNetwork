@@ -27,12 +27,8 @@ public class MnistAgent {
 	protected static final String TEST_IMAGES_FILE_PATH = "./src/main/resources/t10k-images.idx3-ubyte";
 	protected static final String TEST_LABELS_FILE_PATH = "./src/main/resources/t10k-labels.idx1-ubyte";
 	
-	protected final int lHidden = 2;
-	protected final int[] nHidden = new int[] { 500, 500 };
-	
 	protected final double learningRate = 0.001;
 	protected final boolean usingSoftmax = true;
-	protected final ActivationType activationType = ActivationType.Sigmoid;
 	protected final LossType lossType = LossType.CrossEntropy;
 	
 	public MnistAgent() {
@@ -41,28 +37,6 @@ public class MnistAgent {
 		this.testImages = MnistReader.getImages(TEST_IMAGES_FILE_PATH);
 		this.testLabels = MnistReader.getLabels(TEST_LABELS_FILE_PATH);
 		
-		processImageData();
-		
-		if (images.size() == 0 || labels.length == 0 || lHidden != nHidden.length) { return; }
-	}
-	
-	public void generateNetwork() {
-		int nInput = imageData[0].length;
-		int nOutput = 10;
-		
-		this.modularNetwork = new ModularNetwork(nInput);
-		
-		modularNetwork.addLayer(ActivationType.Sigmoid, 500);
-		modularNetwork.addLayer(ActivationType.Sigmoid, 500);
-		
-		modularNetwork.addLayer(ActivationType.Sigmoid, nOutput);
-		
-		modularNetwork.initializeWeightsDynamic();
-		
-		modularNetwork.multithreadingEnable = true;
-	}
-	
-	protected void processImageData() {
 		imageData = new double[images.size()][];
 		testImageData = new double[testImages.size()][];
 		
@@ -75,13 +49,9 @@ public class MnistAgent {
 		}
 	}
 	
-	public void performEpoch(int batchSize) throws InvalidInputLengthException {		
-		modularNetwork.performEpoch(imageData, labels, batchSize, lossType, usingSoftmax, learningRate);
-	}
-	
 	public void performEpochs(int batchSize, int numberOfEpochs) throws InvalidInputLengthException {
 		for (int i = 0; i < numberOfEpochs; i++) {
-			performEpoch(batchSize);
+			modularNetwork.performEpoch(imageData, labels, batchSize, lossType, usingSoftmax, learningRate);
 		}
 	}
 	
@@ -91,6 +61,22 @@ public class MnistAgent {
 		TestResultPackage testResults = modularNetwork.performTest(ArrayUtil.clipArray(testImageData, startIndex, endIndex), ArrayUtil.clipArray(testLabels, startIndex, endIndex));
 		
 		return testResults;
+	}
+	
+	public void generateNetwork() {
+		int nInput = imageData[0].length;
+		int nOutput = 10;
+		
+		this.modularNetwork = new ModularNetwork(nInput);
+		
+		modularNetwork.addLayer(ActivationType.ReLU, 300);
+		modularNetwork.addLayer(ActivationType.ReLU, 100);
+		
+		modularNetwork.addLayer(ActivationType.Sigmoid, nOutput);
+		
+		modularNetwork.initializeWeightsDynamic();
+		
+		modularNetwork.multithreadingEnable = true;
 	}
 	
 	public static void main(String[] args) {
@@ -104,7 +90,7 @@ public class MnistAgent {
 			long endTime = System.nanoTime();
 			System.out.println(mnistAgent.performTest(0, 500));
 			
-			System.out.println("Epochs took: " + (endTime - startTime)/1000000000.0 + " ns");
+			System.out.println("Epochs took: " + (endTime - startTime)/1000000000.0 + "s");
 		} catch (InvalidInputLengthException e) {
 			e.printStackTrace();
 		}

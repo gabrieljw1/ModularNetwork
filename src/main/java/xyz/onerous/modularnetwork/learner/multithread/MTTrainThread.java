@@ -26,7 +26,7 @@ public class MTTrainThread extends Thread {
 	MTTrainThread(ModularNetwork modularNetwork, double[] trainData, int expectedOutput, LossType lossType, boolean usingSoftmax, double learningRate, String threadName) {
 		this.threadName = threadName;
 		
-		this.modularNetwork = modularNetwork;
+		this.modularNetwork = modularNetwork.clone();
 		
 		this.trainData = trainData;
 		this.expectedOutput = expectedOutput;
@@ -43,8 +43,6 @@ public class MTTrainThread extends Thread {
 		} catch (InvalidInputLengthException e) {
 			e.printStackTrace();
 		}
-		
-		System.out.println(this + "" + deltaPackage.deltaW[1][0][0]);
 	}
 	
 	@Override
@@ -158,6 +156,7 @@ public class MTTrainThread extends Thread {
 	
 	public WeightBiasDeltaPackage performTrainAndGetDelta() throws InvalidInputLengthException {
 		modularNetwork.activateNetwork(trainData);
+
 		return gradientDescent(expectedOutput, lossType, usingSoftmax, learningRate);
 	}
 	
